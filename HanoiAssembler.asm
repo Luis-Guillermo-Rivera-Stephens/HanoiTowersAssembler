@@ -4,12 +4,14 @@ main:
 	addi t0,zero, 4		#como vamos a usar .word    4xn 
 	mul t1, a0, t0		#4xn
 	lui a1, 0x10010		#a1 es la torre origen
-	add a2, a1, t1		#a2 es la torre auxiliar 
-	add a3, a2, t1		#a3 es la torre destino
+	addi a2, a1, 32	#a2 es la torre auxiliar 
+	addi a3, a2, 32		#a3 es la torre destino
 	
 	addi t2, zero, 1 	#t2 es el registro con el que vamos a comparar en la recursividad
 	
 	jal setTorreOrigen
+	
+	jal moverDiscos
 	
 	jal exit
 	
@@ -25,7 +27,7 @@ setTorreOrigen:
 		jal zero, for
 	
 	break:
-		sub a0,a0,t1
+		addi a1, a1,-4
 		jalr ra
 
 hanoi: nop
@@ -62,6 +64,12 @@ hanoi: nop
 		
 		
 moverDiscos:
+	lw t4, 0(a1)
+	sw zero, 0(a1)
+	addi a1, a1, -4
+	sw t4, 0(a2)
+	addi a2, a2, 4
+	jalr ra
 		
 		
 		 
