@@ -53,17 +53,17 @@ void setTorre2(short *origen, int numDisc){
 
 void hanoi(int n, short *origen, short *auxiliar, short *destino, short **torres, int a) 
 {
+    printf("\n______\nn: %d\n________\n", n);
     if(n==1){ 
         moverDisco(origen, auxiliar, a);
         printTorres(torres[0], torres[1], torres[2] ,a);
         system("pause");
         return ;
     }
-    printTorres(torres[0], torres[1], torres[2] ,a);
-    system("pause");
     
     hanoi(n-1, origen, destino, auxiliar, torres, a);
 
+    printf("\n______\nn: %d\n________\n", n);
     moverDisco(origen, auxiliar, a);
     printTorres(torres[0], torres[1], torres[2] ,a);
     system("pause");
