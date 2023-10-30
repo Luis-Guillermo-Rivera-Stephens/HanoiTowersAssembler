@@ -1,17 +1,21 @@
 .text 
 main: 
+
+	#set the args
 	addi a0,zero, 3		#a0 es la variable n
-	addi t0,zero, 4		#como vamos a usar .word    4xn 
-	mul t1, a0, t0		#4xn
+	addi t0,zero, 2		#como vamos a usar .word    4xn 
+	sll t1, a0, t0		#4xn
 	lui a1, 0x10010		#a1 es la torre origen
-	addi a2, a1, 32	#a2 es la torre auxiliar 
-	addi a3, a2, 32		#a3 es la torre destino
+	add a2, a1, t1		#a2 es la torre destino
+	add a3, a2, t1		#a3 es la torre auxiliar
 	
 	addi t2, zero, 1 	#t2 es el registro con el que vamos a comparar en la recursividad
 	
 	jal setTorreOrigen
 	
-	jal moverDiscos
+	#hasta aqui todo está bien
+	
+	jal hanoi
 	
 	jal exit
 	
@@ -30,13 +34,46 @@ setTorreOrigen:
 		addi a1, a1,-4
 		jalr ra
 
-hanoi: nop
-	bne a0, t2, else 	#si son distintos va a a saltar a else
+hanoi: 	bne a0, t2, else 	#si son distintos va a a saltar a else
 	if:
-		jal moverDiscos
+		jal t6, moverDiscos
 		jalr ra
 		
 	else:
+		#/////////////////////////////////////
+		#push
+		addi sp, sp, -20
+		sw a0, 16(sp) 		#push de n
+		sw a1, 12(sp)		#push de torre origen
+		sw a2, 8(sp)		#push de torre destino
+		sw a3, 4(sp)		#push de torre auxiliar
+		sw ra, 0(sp)		#push de PC+4
+		
+		#////////////////////////////////////
+		#modificacion de datos
+		addi a0, a0, -1		#n-1
+		
+		#swap torres 
+		add t3, zero, a2 #aux = torre destino
+		add a2, zero, a3 #torre  destino = torre auxiliar
+		add a3, zero, t3 #torre auxiliar = aux
+		
+		#recursion 
+		jal hanoi
+		
+		#///////////////////////////////////
+		#pop
+		lw ra,0(sp)
+		lw a3, 4(sp)
+		lw a2, 8(sp)
+		#addi a2, a2, 4
+		lw a1, 12(sp)
+		#addi a1,a1, -4
+		lw a0, 16(sp)
+		addi sp,sp,20
+		
+		jal t6, moverDiscos
+		
 		#/////////////////////////////////////
 		#push
 		addi sp, sp, -20
@@ -51,28 +88,36 @@ hanoi: nop
 		addi a0, a0, -1		#n-1
 		
 		#swap torres 
-		add t3, zero, a2 #aux = torre auxiliar
-		add a2, zero, a3 #torre auxiliar = torre destino
-		add a3, zero, t3 #torre destino = aux
+		add t3, zero, a1 #aux = torre origen
+		add a1, zero, a2 #torre origen= torre destino
+		add a2, zero, t3 #torre destino = aux
 		
+		#recursion 
 		jal hanoi
 		
 		#///////////////////////////////////
 		#pop
+		lw ra,0(sp)
+		lw a3, 4(sp)
+		lw a2, 8(sp)
+		lw a1, 12(sp)
+		lw a0, 16(sp)
+		addi sp,sp,20
 		
+		jalr ra
 		
-		
-		
+		#cambiar el label de return move a un registro		
 moverDiscos:
 	lw t4, 0(a1)
 	sw zero, 0(a1)
 	addi a1, a1, -4
 	sw t4, 0(a2)
 	addi a2, a2, 4
-	jalr ra
+	jalr t6 , t6, 0
 		
 		
 		 
 	
 
-exit: nop	
+exit: 
+nop	
