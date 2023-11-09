@@ -24,8 +24,7 @@ setTorreOrigen:
 		addi a1, a1, 4		#se le suma a la direccion para pasar a la siguiente direccion de memoria 
 		jal zero, for
 	break:
-		####addi a1, a1,-4
-		lui a1, 0x10010 ####
+		lui a1, 0x10010 #setea la primera direccion en el registro
 		jalr ra
  
 hanoi: 	bne a0, t2, else 	#si son distintos va a a saltar a else
@@ -84,24 +83,19 @@ hanoi: 	bne a0, t2, else 	#si son distintos va a a saltar a else
 		lw a1, 12(sp)
 		lw a0, 16(sp)
 		addi sp,sp,20
-		jalr ra
-		#cambiar el label de return move a un registro		
+		jalr ra	
 moverDiscos:
 	# El calculo del offset debe ser offset = 4(s0-a0);
-	###addi t5,a0,-1
-	sub t5, s0, a0 ###
-	sll t5,t5,s2
-	###sub a1, a1, t5
-	add s1, a1, t5  ###
-	lw t4, 0(s1)###
-	sw zero, 0(s1)###
+	sub t5, s0, a0 #s0 es una copia a0 es la n ya manipulada
+	sll t5,t5,s2 	#se multiplica esa resta por 4
+
+	add s1, a1, t5  #s1 es un regitro para guardar en la Ram sin manipular las primeras direcciones de los registros 
+	lw t4, 0(s1)	 #se carga el dato
+	sw zero, 0(s1)	 #se pone en 0 la posicion que sacamos 
  
-	#mandar al profe por erro
-	###sw t4, 0(a3)
-	###addi t5,a0,-1
-	###sll t5,t5,s2
-	add s1,a3, t5 ###
-	sw t4, 0(s1) ###
+
+	add s1,a3, t5 
+	sw t4, 0(s1) 
 	jalr t6 , t6, 0
 
 
